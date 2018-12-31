@@ -280,7 +280,7 @@ static int evm_protect_xattr(struct dentry *dentry, const char *xattr_name,
  * access to the EVM encrypted key needed to calculate the HMAC, prevent
  * userspace from writing HMAC value.  Writing 'security.evm' requires
  * requires CAP_SYS_ADMIN privileges.
-**/
+ */
 int evm_inode_setxattr(struct dentry *dentry, const char *xattr_name,
 		       const void *xattr_value, size_t xattr_value_len)
 {
@@ -292,7 +292,6 @@ int evm_inode_setxattr(struct dentry *dentry, const char *xattr_name,
 		if (xattr_data->type != EVM_IMA_XATTR_DIGSIG)
 			return -EPERM;
 	}
-
 	return evm_protect_xattr(dentry, xattr_name, xattr_value,
 				 xattr_value_len);
 }

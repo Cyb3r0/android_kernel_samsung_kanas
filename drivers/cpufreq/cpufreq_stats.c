@@ -9,10 +9,7 @@
  * published by the Free Software Foundation.
  */
 
-#include <linux/kernel.h>
-#include <linux/slab.h>
 #include <linux/cpu.h>
-#include <linux/sysfs.h>
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 #include <linux/jiffies.h>
@@ -20,6 +17,11 @@
 #include <linux/kobject.h>
 #include <linux/spinlock.h>
 #include <linux/notifier.h>
+#include <linux/sched.h>
+#include <linux/slab.h>
+#include <linux/sort.h>
+#include <linux/err.h>
+#include <linux/of.h>
 #include <asm/cputime.h>
 
 static spinlock_t cpufreq_stats_lock;
@@ -27,7 +29,7 @@ static spinlock_t cpufreq_stats_lock;
 struct cpufreq_stats {
 	unsigned int cpu;
 	unsigned int total_trans;
-	unsigned long long  last_time;
+	unsigned long long last_time;
 	unsigned int max_state;
 	unsigned int state_num;
 	unsigned int last_index;
@@ -38,7 +40,14 @@ struct cpufreq_stats {
 #endif
 };
 
+struct cpufreq_power_stats {
+	unsigned int state_num;
+	unsigned int *curr;
+	unsigned int *freq_table;
+};
+
 static DEFINE_PER_CPU(struct cpufreq_stats *, cpufreq_stats_table);
+static DEFINE_PER_CPU(struct cpufreq_power_stats *, cpufreq_power_stats);
 
 struct cpufreq_stats_attribute {
 	struct attribute attr;
@@ -86,6 +95,24 @@ static ssize_t show_time_in_state(struct cpufreq_policy *policy, char *buf)
 	return len;
 }
 
+void acct_update_power(struct task_struct *task, cputime_t cputime) {
+	struct cpufreq_power_stats *powerstats;
+	struct cpufreq_stats *stats;
+	unsigned int cpu_num, curr;
+
+	if (!task)
+		return;
+	cpu_num = task_cpu(task);
+	powerstats = per_cpu(cpufreq_power_stats, cpu_num);
+	stats = per_cpu(cpufreq_stats_table, cpu_num);
+	if (!powerstats || !stats)
+		return;
+
+	curr = powerstats->curr[stats->last_index];
+	task->cpu_power += curr * cputime_to_usecs(cputime);
+}
+EXPORT_SYMBOL_GPL(acct_update_power);
+
 #ifdef CONFIG_CPU_FREQ_STAT_DETAILS
 static ssize_t show_trans_table(struct cpufreq_policy *policy, char *buf)
 {
@@ -116,7 +143,7 @@ static ssize_t show_trans_table(struct cpufreq_policy *policy, char *buf)
 		len += snprintf(buf + len, PAGE_SIZE - len, "%9u: ",
 				stat->freq_table[i]);
 
-		for (j = 0; j < stat->state_num; j++)   {
+		for (j = 0; j < stat->state_num; j++) {
 			if (len >= PAGE_SIZE)
 				break;
 			len += snprintf(buf + len, PAGE_SIZE - len, "%9u ",
@@ -431,6 +458,9 @@ static int __init cpufreq_stats_init(void)
 			cpufreq_stats_free_table(cpu);
 		return ret;
 	}
+
+	for_each_online_cpu(cpu)
+		cpufreq_update_policy(cpu);
 
 	return 0;
 }

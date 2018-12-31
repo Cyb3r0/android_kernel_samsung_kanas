@@ -8,16 +8,16 @@
 set -e -o pipefail
 
 DEFCONFIG=sandroid_kanas_defconfig
-NAME=SandroidKernel
-VERSION=v1.3
+NAME=LN13-SandroidKernel
+VERSION=v1.4
 DEVICE=kanas
 OWNER=MuhammadIhsan-Ih24n
 NOW=`date "+%d%m%Y-%H%M%S"`
 PREFIX=SA
 
-export CROSS_COMPILE=/home/muhammadihsan/Toolchain/arm-linux-eabi-UB-4.9/bin/arm-eabi-
+export CROSS_COMPILE=./builds/toolchains/arm-eabi/bin/arm-eabi-
 export ARCH=arm
-export LOCALVERSION=-`echo SandroidTeam-$USER`
+export LOCALVERSION=-`echo SandroidTeam-Ih24n-Intan`
 
 KERNEL_PATH=$(pwd)
 KERNEL_ZIP=${KERNEL_PATH}/kernel_zip

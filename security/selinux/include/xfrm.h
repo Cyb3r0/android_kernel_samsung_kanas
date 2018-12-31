@@ -86,7 +86,7 @@ static inline int selinux_xfrm_skb_sid(struct sk_buff *skb, u32 *sid)
 {
 	*sid = SECSID_NULL;
 	return 0;
-}
+ }
 #endif
 
 #endif /* _SELINUX_XFRM_H_ */

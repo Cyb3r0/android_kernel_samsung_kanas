@@ -307,7 +307,6 @@ static void avc_operation_free(struct avc_operation_node *ops_node)
 		list_del(&od_node->od_list);
 		avc_operation_decision_free(od_node);
 	}
-
 	kmem_cache_free(avc_operation_node_cachep, ops_node);
 }
 
@@ -741,7 +740,7 @@ static void avc_audit_post_callback(struct audit_buffer *ab, void *a)
 	avc_dump_query(ab, ad->selinux_audit_data->ssid,
 			   ad->selinux_audit_data->tsid,
 			   ad->selinux_audit_data->tclass);
-			if (ad->selinux_audit_data->denied) {
+	if (ad->selinux_audit_data->denied) {
 		audit_log_format(ab, " permissive=%u",
 				 ad->selinux_audit_data->result ? 0 : 1);
 	}

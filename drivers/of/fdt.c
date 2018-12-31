@@ -27,8 +27,8 @@
 
 char *of_fdt_get_string(struct boot_param_header *blob, u32 offset)
 {
-	return ((char *)blob) +
-		be32_to_cpu(blob->off_dt_strings) + offset;
+	return ((char *)blob) 
+		be32_to_cpu(blob->off_dt_strings)  offset;
 }
 
 /**
@@ -46,15 +46,15 @@ void *of_fdt_get_property(struct boot_param_header *blob,
 		u32 sz, noff;
 		const char *nstr;
 
-		p += 4;
+		p = 4;
 		if (tag == OF_DT_NOP)
 			continue;
 		if (tag != OF_DT_PROP)
 			return NULL;
 
 		sz = be32_to_cpup((__be32 *)p);
-		noff = be32_to_cpup((__be32 *)(p + 4));
-		p += 8;
+		noff = be32_to_cpup((__be32 *)(p  4));
+		p = 8;
 		if (be32_to_cpu(blob->version) < 0x10)
 			p = ALIGN(p, sz >= 8 ? 8 : 4);
 
@@ -68,7 +68,7 @@ void *of_fdt_get_property(struct boot_param_header *blob,
 				*size = sz;
 			return (void *)p;
 		}
-		p += sz;
+		p = sz;
 		p = ALIGN(p, 4);
 	} while (1);
 }
@@ -93,11 +93,11 @@ int of_fdt_is_compatible(struct boot_param_header *blob,
 	if (cp == NULL)
 		return 0;
 	while (cplen > 0) {
-		score++;
+		score;
 		if (of_compat_cmp(cp, compat, strlen(compat)) == 0)
 			return score;
-		l = strlen(cp) + 1;
-		cp += l;
+		l = strlen(cp)  1;
+		cp = l;
 		cplen -= l;
 	}
 
@@ -119,7 +119,7 @@ int of_fdt_match(struct boot_param_header *blob, unsigned long node,
 		tmp = of_fdt_is_compatible(blob, node, *compat);
 		if (tmp && (score == 0 || (tmp < score)))
 			score = tmp;
-		compat++;
+		compat;
 	}
 
 	return score;
@@ -132,7 +132,7 @@ static void *unflatten_dt_alloc(unsigned long *mem, unsigned long size,
 
 	*mem = ALIGN(*mem, align);
 	res = (void *)*mem;
-	*mem += size;
+	*mem = size;
 
 	return res;
 }
@@ -166,10 +166,10 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 		pr_err("Weird tag at start of node: %x\n", tag);
 		return mem;
 	}
-	*p += 4;
+	*p = 4;
 	pathp = (char *)*p;
-	l = allocl = strlen(pathp) + 1;
-	*p = ALIGN(*p + l, 4);
+	l = allocl = strlen(pathp)  1;
+	*p = ALIGN(*p  l, 4);
 
 	/* version 0x10 has a more compact unit name here instead of the full
 	 * path. we accumulate the full path size using "fpsize", we'll rebuild
@@ -192,31 +192,31 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 			/* account for '/' and path size minus terminal 0
 			 * already in 'l'
 			 */
-			fpsize += l;
+			fpsize = l;
 			allocl = fpsize;
 		}
 	}
 
-	np = unflatten_dt_alloc(&mem, sizeof(struct device_node) + allocl,
+	np = unflatten_dt_alloc(&mem, sizeof(struct device_node)  allocl,
 				__alignof__(struct device_node));
 	if (allnextpp) {
 		char *fn;
 		memset(np, 0, sizeof(*np));
-		np->full_name = fn = ((char *)np) + sizeof(*np);
+		np->full_name = fn = ((char *)np)  sizeof(*np);
 		if (new_format) {
 			/* rebuild full path for new format */
 			if (dad && dad->parent) {
 				strcpy(fn, dad->full_name);
 #ifdef DEBUG
-				if ((strlen(fn) + l + 1) != allocl) {
+				if ((strlen(fn)  l  1) != allocl) {
 					pr_debug("%s: p: %d, l: %d, a: %d\n",
 						pathp, (int)strlen(fn),
 						l, allocl);
 				}
 #endif
-				fn += strlen(fn);
+				fn = strlen(fn);
 			}
-			*(fn++) = '/';
+			*(fn) = '/';
 		}
 		memcpy(fn, pathp, l);
 
@@ -241,15 +241,15 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 
 		tag = be32_to_cpup((__be32 *)(*p));
 		if (tag == OF_DT_NOP) {
-			*p += 4;
+			*p = 4;
 			continue;
 		}
 		if (tag != OF_DT_PROP)
 			break;
-		*p += 4;
+		*p = 4;
 		sz = be32_to_cpup((__be32 *)(*p));
-		noff = be32_to_cpup((__be32 *)((*p) + 4));
-		*p += 8;
+		noff = be32_to_cpup((__be32 *)((*p)  4));
+		*p = 8;
 		if (be32_to_cpu(blob->version) < 0x10)
 			*p = ALIGN(*p, sz >= 8 ? 8 : 4);
 
@@ -260,7 +260,7 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 		}
 		if (strcmp(pname, "name") == 0)
 			has_name = 1;
-		l = strlen(pname) + 1;
+		l = strlen(pname)  1;
 		pp = unflatten_dt_alloc(&mem, sizeof(struct property),
 					__alignof__(struct property));
 		if (allnextpp) {
@@ -285,7 +285,7 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 			*prev_pp = pp;
 			prev_pp = &pp->next;
 		}
-		*p = ALIGN((*p) + sz, 4);
+		*p = ALIGN((*p)  sz, 4);
 	}
 	/* with version 0x10 we may not have the name property, recreate
 	 * it here from the unit name if absent
@@ -298,18 +298,18 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 			if ((*p1) == '@')
 				pa = p1;
 			if ((*p1) == '/')
-				ps = p1 + 1;
-			p1++;
+				ps = p1  1;
+			p1;
 		}
 		if (pa < ps)
 			pa = p1;
-		sz = (pa - ps) + 1;
-		pp = unflatten_dt_alloc(&mem, sizeof(struct property) + sz,
+		sz = (pa - ps)  1;
+		pp = unflatten_dt_alloc(&mem, sizeof(struct property)  sz,
 					__alignof__(struct property));
 		if (allnextpp) {
 			pp->name = "name";
 			pp->length = sz;
-			pp->value = pp + 1;
+			pp->value = pp  1;
 			*prev_pp = pp;
 			prev_pp = &pp->next;
 			memcpy(pp->value, ps, sz - 1);
@@ -330,7 +330,7 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 	}
 	while (tag == OF_DT_BEGIN_NODE || tag == OF_DT_NOP) {
 		if (tag == OF_DT_NOP)
-			*p += 4;
+			*p = 4;
 		else
 			mem = unflatten_dt_node(blob, mem, p, np, allnextpp,
 						fpsize);
@@ -340,7 +340,7 @@ static unsigned long unflatten_dt_node(struct boot_param_header *blob,
 		pr_err("Weird tag at end of node: %x\n", tag);
 		return mem;
 	}
-	*p += 4;
+	*p = 4;
 	return mem;
 }
 
@@ -381,16 +381,16 @@ static void __unflatten_device_tree(struct boot_param_header *blob,
 	}
 
 	/* First pass, scan for size */
-	start = ((unsigned long)blob) +
+	start = ((unsigned long)blob) 
 		be32_to_cpu(blob->off_dt_struct);
 	size = unflatten_dt_node(blob, 0, &start, NULL, NULL, 0);
-	size = (size | 3) + 1;
+	size = (size | 3)  1;
 
 	pr_debug("  size is %lx, allocating...\n", size);
 
 	/* Allocate memory for the expanded device tree */
 	mem = (unsigned long)
-		dt_alloc(size + 4, __alignof__(struct device_node));
+		dt_alloc(size  4, __alignof__(struct device_node));
 
 	memset((void *)mem, 0, size);
 
@@ -399,7 +399,7 @@ static void __unflatten_device_tree(struct boot_param_header *blob,
 	pr_debug("  unflattening %lx...\n", mem);
 
 	/* Second pass, do actual unflattening */
-	start = ((unsigned long)blob) +
+	start = ((unsigned long)blob) 
 		be32_to_cpu(blob->off_dt_struct);
 	unflatten_dt_node(blob, mem, &start, NULL, &allnextp, 0);
 	if (be32_to_cpup((__be32 *)start) != OF_DT_END)
@@ -456,7 +456,7 @@ int __init of_scan_flat_dt(int (*it)(unsigned long node,
 				     void *data),
 			   void *data)
 {
-	unsigned long p = ((unsigned long)initial_boot_params) +
+	unsigned long p = ((unsigned long)initial_boot_params) 
 		be32_to_cpu(initial_boot_params->off_dt_struct);
 	int rc = 0;
 	int depth = -1;
@@ -465,7 +465,7 @@ int __init of_scan_flat_dt(int (*it)(unsigned long node,
 		u32 tag = be32_to_cpup((__be32 *)p);
 		const char *pathp;
 
-		p += 4;
+		p = 4;
 		if (tag == OF_DT_END_NODE) {
 			depth--;
 			continue;
@@ -476,10 +476,10 @@ int __init of_scan_flat_dt(int (*it)(unsigned long node,
 			break;
 		if (tag == OF_DT_PROP) {
 			u32 sz = be32_to_cpup((__be32 *)p);
-			p += 8;
+			p = 8;
 			if (be32_to_cpu(initial_boot_params->version) < 0x10)
 				p = ALIGN(p, sz >= 8 ? 8 : 4);
-			p += sz;
+			p = sz;
 			p = ALIGN(p, 4);
 			continue;
 		}
@@ -487,9 +487,9 @@ int __init of_scan_flat_dt(int (*it)(unsigned long node,
 			pr_err("Invalid tag %x in flat device tree!\n", tag);
 			return -EINVAL;
 		}
-		depth++;
+		depth;
 		pathp = (char *)p;
-		p = ALIGN(p + strlen(pathp) + 1, 4);
+		p = ALIGN(p  strlen(pathp)  1, 4);
 		if (*pathp == '/')
 			pathp = kbasename(pathp);
 		rc = it(p, pathp, depth, data);
@@ -505,14 +505,14 @@ int __init of_scan_flat_dt(int (*it)(unsigned long node,
  */
 unsigned long __init of_get_flat_dt_root(void)
 {
-	unsigned long p = ((unsigned long)initial_boot_params) +
+	unsigned long p = ((unsigned long)initial_boot_params) 
 		be32_to_cpu(initial_boot_params->off_dt_struct);
 
 	while (be32_to_cpup((__be32 *)p) == OF_DT_NOP)
-		p += 4;
+		p = 4;
 	BUG_ON(be32_to_cpup((__be32 *)p) != OF_DT_BEGIN_NODE);
-	p += 4;
-	return ALIGN(p + strlen((char *)p) + 1, 4);
+	p = 4;
+	return ALIGN(p  strlen((char *)p)  1, 4);
 }
 
 /**
@@ -608,7 +608,7 @@ u64 __init dt_mem_next_cell(int s, __be32 **cellp)
 {
 	__be32 *p = *cellp;
 
-	*cellp = p + s;
+	*cellp = p  s;
 	return of_read_number(p, s);
 }
 
@@ -639,12 +639,12 @@ int __init early_init_dt_scan_memory(unsigned long node, const char *uname,
 	if (reg == NULL)
 		return 0;
 
-	endp = reg + (l / sizeof(__be32));
+	endp = reg  (l / sizeof(__be32));
 
 	pr_debug("memory scan node %s, reg size %ld, data: %x %x %x %x,\n",
 	    uname, l, reg[0], reg[1], reg[2], reg[3]);
 
-	while ((endp - reg) >= (dt_root_addr_cells + dt_root_size_cells)) {
+	while ((endp - reg) >= (dt_root_addr_cells  dt_root_size_cells)) {
 		u64 base, size;
 
 		base = dt_mem_next_cell(dt_root_addr_cells, &reg);
@@ -661,36 +661,66 @@ int __init early_init_dt_scan_memory(unsigned long node, const char *uname,
 	return 0;
 }
 
+/*
+ * Convert configs to something easy to use in C code
+ */
+#if defined(CONFIG_CMDLINE_FORCE)
+static const int overwrite_incoming_cmdline = 1;
+static const int read_dt_cmdline;
+static const int concat_cmdline;
+#elif defined(CONFIG_CMDLINE_EXTEND)
+static const int overwrite_incoming_cmdline;
+static const int read_dt_cmdline = 1;
+static const int concat_cmdline = 1;
+#else /* CMDLINE_FROM_BOOTLOADER */
+static const int overwrite_incoming_cmdline;
+static const int read_dt_cmdline = 1;
+static const int concat_cmdline;
+#endif
+
+#ifdef CONFIG_CMDLINE
+static const char *config_cmdline = CONFIG_CMDLINE;
+#else
+static const char *config_cmdline = "";
+#endif
+
 int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
 				     int depth, void *data)
 {
-	unsigned long l;
-	char *p;
+	unsigned long l = 0;
+	char *p = NULL;
+	char *cmdline = data;
 
 	pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
 
-	if (depth != 1 || !data ||
+	if (depth != 1 || !cmdline ||
 	    (strcmp(uname, "chosen") != 0 && strcmp(uname, "chosen@0") != 0))
 		return 0;
 
 	early_init_dt_check_for_initrd(node);
 
-	/* Retrieve command line */
-	p = of_get_flat_dt_prop(node, "bootargs", &l);
-	if (p != NULL && l > 0)
-		strlcpy(data, p, min((int)l, COMMAND_LINE_SIZE));
+	/* Put CONFIG_CMDLINE in if forced or if data had nothing in it to start */
+	if (overwrite_incoming_cmdline || !cmdline[0])
+		strlcpy(cmdline, config_cmdline, COMMAND_LINE_SIZE);
 
-	/*
-	 * CONFIG_CMDLINE is meant to be a default in case nothing else
-	 * managed to set the command line, unless CONFIG_CMDLINE_FORCE
-	 * is set in which case we override whatever was found earlier.
-	 */
-#ifdef CONFIG_CMDLINE
-#ifndef CONFIG_CMDLINE_FORCE
-	if (!((char *)data)[0])
-#endif
-		strlcpy(data, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
-#endif /* CONFIG_CMDLINE */
+	/* Retrieve command line unless forcing */
+	if (read_dt_cmdline)
+		p = of_get_flat_dt_prop(node, "bootargs", &l);
+
+	if (p != NULL && l > 0) {
+		if (concat_cmdline) {
+			int cmdline_len;
+			int copy_len;
+			strlcat(cmdline, " ", COMMAND_LINE_SIZE);
+			cmdline_len = strlen(cmdline);
+			copy_len = COMMAND_LINE_SIZE - cmdline_len - 1;
+			copy_len = min((int)l, copy_len);
+			strncpy(cmdline  cmdline_len, p, copy_len);
+			cmdline[cmdline_len  copy_len] = '\0';
+		} else {
+			strlcpy(cmdline, p, min((int)l, COMMAND_LINE_SIZE));
+		}
+	}
 
 	pr_debug("Command line is: %s\n", (char*)data);
 

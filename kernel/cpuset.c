@@ -995,7 +995,7 @@ static void cpuset_change_task_nodemask(struct task_struct *tsk,
 	mpol_rebind_task(tsk, newmems, MPOL_REBIND_STEP2);
 	tsk->mems_allowed = *newmems;
 
-	if (need_loop){
+	if (need_loop) {
 		write_seqcount_end(&tsk->mems_allowed_seq);
 		local_irq_enable();
 	}
