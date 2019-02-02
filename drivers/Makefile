@@ -156,3 +156,4 @@ obj-$(CONFIG_NTB)		+= ntb/
 
 obj-$(CONFIG_SIPC)		+= sipc/
 obj-$(CONFIG_SENSORS)		+= sensor/
+obj-$(CONFIG_ANDROID)		+= android/

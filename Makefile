@@ -196,7 +196,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 #CROSS_COMPILE	=/opt/toolchains/arm-eabi-4.7/bin/arm-eabi-
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?=arm
-CROSS_COMPILE	?=/home/muhammadihsan/Toolchain/arm-linux-eabi-UB-4.9/bin/arm-eabi-
+CROSS_COMPILE	?=./builds/toolchains/arm-eabi/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)

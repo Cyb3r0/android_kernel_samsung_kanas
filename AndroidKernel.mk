@@ -1,6 +1,12 @@
-KERNEL_OUT := $(TARGET_OUT_INTERMEDIATES)/KERNEL
+KERNEL_OUT ?= $(OUT)/obj/KERNEL_OBJ
+KERNEL_DEFCONFIG ?= lineageos_nougat_kanas_defconfig
 KERNEL_CONFIG := $(KERNEL_OUT)/.config
-KERNEL_MODULES_OUT := $(TARGET_OUT)/lib/modules
+
+TARGET_KERNEL_SOURCE ?= $(PWD)
+
+#CCACHE ?= $(ANDROID_BUILD_TOP)/prebuilts/misc/linux-x86/ccache/ccache
+CCACHE ?= ccache
+KERNEL_TOOLCHAIN ?= $(ANDROID_BUILD_TOP)/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin
 
 ifeq ($(USES_UNCOMPRESSED_KERNEL),true)
 TARGET_PREBUILT_KERNEL := $(KERNEL_OUT)/arch/arm/boot/Image
@@ -8,20 +14,16 @@ else
 TARGET_PREBUILT_KERNEL := $(KERNEL_OUT)/arch/arm/boot/zImage
 endif
 
+all: $(TARGET_PREBUILT_KERNEL)
+
+kernelheader: $(KERNEL_OUT)
+	$(MAKE) -C $(TARGET_KERNEL_SOURCE) O=$(KERNEL_OUT) ARCH=arm CROSS_COMPILE="$(CCACHE) $(KERNEL_TOOLCHAIN)/arm-eabi-" headers_install
+
 $(KERNEL_OUT):
-	@echo "==== Start Kernel Compiling ... ===="
-
-$(KERNEL_CONFIG): kernel/arch/arm/configs/$(KERNEL_DEFCONFIG)
 	mkdir -p $(KERNEL_OUT)
-	$(MAKE) -C kernel O=../$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- $(KERNEL_DEFCONFIG)
 
-$(TARGET_PREBUILT_KERNEL) : $(KERNEL_OUT) $(KERNEL_CONFIG)
-	$(MAKE) -C kernel O=../$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- headers_install
-	$(MAKE) -C kernel O=../$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- zImage -j4
-	$(MAKE) -C kernel O=../$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- modules
-	@-mkdir -p $(KERNEL_MODULES_OUT)
-	@-find $(KERNEL_OUT) -name *.ko | xargs -I{} cp {} $(KERNEL_MODULES_OUT)
+$(KERNEL_CONFIG): $(TARGET_KERNEL_SOURCE)/arch/arm/configs/$(KERNEL_DEFCONFIG)
+	$(MAKE) -C $(TARGET_KERNEL_SOURCE) O=$(KERNEL_OUT) ARCH=arm CROSS_COMPILE="$(CCACHE) $(KERNEL_TOOLCHAIN)/arm-eabi-" $(KERNEL_DEFCONFIG)
 
-kernelheader:
-	mkdir -p $(KERNEL_OUT)
-	$(MAKE) -C kernel O=../$(KERNEL_OUT) ARCH=arm CROSS_COMPILE=arm-eabi- headers_install
+$(TARGET_PREBUILT_KERNEL): kernelheader $(KERNEL_OUT) $(KERNEL_CONFIG)
+$(MAKE) -C $(TARGET_KERNEL_SOURCE) O=$(KERNEL_OUT) ARCH=arm CROSS_COMPILE="$(CCACHE) $(KERNEL_TOOLCHAIN)/arm-eabi-" -j4 zImage

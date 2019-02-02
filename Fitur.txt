@@ -70,3 +70,10 @@ SANDROID KERNEL FEATURES :
 		* Support for Marshmallow
 
 
+	===============================
+	SANDROID KERNEL v1.5 15-01-2019
+	===============================
+		* Support for Nougat
+
+
+
