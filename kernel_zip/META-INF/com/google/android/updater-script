@@ -1,5 +1,5 @@
 ui_print("------------------------------------------");
-ui_print("            SANDROID KERNEL-v1.3          ");
+ui_print("            SANDROID KERNEL-v1.5          ");
 ui_print("                     FOR                  ");
 ui_print("           SAMSUNG GALAXY CORE II   	    ");
 ui_print("------------------------------------------");
@@ -50,9 +50,9 @@ ui_print("                                          ");
 ui_print("------------------------------------------");
 ui_print("    KUNJUNGI BLOG RESMINYA HANYA DI       ");
 ui_print("");
-ui_print("    http://sandroid-team.blogspot.com/    ");
+ui_print("    http://www.sandroidteam.com/          ");
 ui_print("");
-ui_print("    http://sandroidteam.wordpress.com/    ");
+ui_print("    https://ih24n69.github.io/            ");
 ui_print("");
 ui_print("------------------------------------------");
 set_progress(1.0);
