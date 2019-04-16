@@ -7,7 +7,7 @@
 
 set -e -o pipefail
 
-DEFCONFIG=lineageos_nougat_kanas_defconfig
+DEFCONFIG=sandroid_mno_kanas_defconfig
 NAME=LN15.1-SandroidKernel
 VERSION=v1.5
 DEVICE=kanas
@@ -15,7 +15,7 @@ OWNER=MuhammadIhsan-Ih24n
 NOW=`date "+%d%m%Y-%H%M%S"`
 PREFIX=SA
 
-export CROSS_COMPILE=./builds/toolchains/arm-eabi/bin/arm-eabi-
+export CROSS_COMPILE=/home/muhammadihsan/LineageOS15.1-O-SandroidTeam-Ih24n/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
 export ARCH=arm
 export LOCALVERSION=-`echo SandroidTeam-Ih24n`
 
