@@ -9,3 +9,11 @@ config CPU_FREQ_GOV_SMARTASS2
 	profile (behaves a bit differently when screen is off vs. on).
 	The smartassV2 improves the very naive scheme which the first
 	smartass had
+
+config CPU_FREQ_GOV_WHEATLEY
+	tristate "'wheatley' cpufreq governor"
+	depends on CPU_FREQ
+     ---help---
+	Building on the classic 'ondemand' governor is implemented Wheatley
+	governor. The governor has two additional parameters that control
+	the state.
