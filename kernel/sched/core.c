@@ -2512,6 +2512,7 @@ static void calc_load_account_active(struct rq *this_rq)
  */
 #define DEGRADE_SHIFT		7
 static const unsigned char
+
 		degrade_zero_ticks[CPU_LOAD_IDX_MAX] = {0, 8, 32, 64, 128};
 static const unsigned char
 		degrade_factor[CPU_LOAD_IDX_MAX][DEGRADE_SHIFT + 1] = {
@@ -4883,6 +4884,7 @@ EXPORT_SYMBOL_GPL(set_cpus_allowed_ptr);
 static int __migrate_task(struct task_struct *p, int src_cpu, int dest_cpu)
 {
 	struct rq *rq_dest, *rq_src;
+	bool moved = false;
 	int ret = 0;
 
 	if (unlikely(!cpu_active(dest_cpu)))
@@ -5344,6 +5346,7 @@ static cpumask_var_t sched_domains_tmpmask; /* sched_domains_mutex */
 #ifdef CONFIG_SCHED_DEBUG
 
 static __read_mostly int sched_debug_enabled;
+
 
 static int __init sched_debug_setup(char *str)
 {
