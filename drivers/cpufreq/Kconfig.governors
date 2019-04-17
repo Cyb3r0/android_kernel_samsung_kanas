@@ -38,3 +38,13 @@ config CPU_FREQ_GOV_LIONHEART
 	update3 source. The tunables (such as the thresholds and sampling rate)
 	were changed so the governor behaves more like the performance one, at
 	the cost of battery as the scaling is very aggressive.
+
+config CPU_FREQ_GOV_LULZACTIVE2
+	tristate "'lulzactive' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  When workload is greater than or equal to 60%, the 
+	  governor scales up CPU to next higher step. When 
+	  workload is less than 60%, governor scales down CPU
+	  to next lower step. When screen is off, frequency is
+	  locked to global scaling minimum frequency.
