@@ -35,12 +35,12 @@
  * It helps to keep variable names smaller, simpler
  */
 
-#define DEF_FREQUENCY_UP_THRESHOLD			(50)
-#define DEF_FREQUENCY_DOWN_THRESHOLD		(15)
-#define FREQ_STEP_DOWN 						(108000)
-#define FREQ_SLEEP_MAX 						(245760)
-#define FREQ_AWAKE_MIN 						(368000)
-#define FREQ_STEP_UP_SLEEP_PERCENT 			(20)
+#define DEF_FREQUENCY_UP_THRESHOLD				(65)
+#define DEF_FREQUENCY_DOWN_THRESHOLD				(35)
+#define FREQ_STEP_DOWN						(200000)
+#define FREQ_SLEEP_MAX						(500000)
+#define FREQ_AWAKE_MIN						(100000)
+#define FREQ_STEP_UP_SLEEP_PERCENT				(20)
 
 /*
  * The polling frequency of this governor depends on the capability of
@@ -57,7 +57,7 @@ unsigned int suspended = 0;
 #define MIN_SAMPLING_RATE_RATIO			(2)
 /* for correct statistics, we need at least 10 ticks between each measure */
 #define MIN_STAT_SAMPLING_RATE			\
-	(MIN_SAMPLING_RATE_RATIO * jiffies_to_usecs(CONFIG_CPU_FREQ_MIN_TICKS))
+	(MIN_SAMPLING_RATE_RATIO * jiffies_to_usecs(10))
 #define MIN_SAMPLING_RATE			\
 			(def_sampling_rate / MIN_SAMPLING_RATE_RATIO)
 #define MAX_SAMPLING_RATE			(500 * def_sampling_rate)
@@ -396,11 +396,11 @@ static void dbs_check_cpu(int cpu)
 		this_dbs_info->requested_freq += freq_target;
 		if (this_dbs_info->requested_freq > policy->max)
 			this_dbs_info->requested_freq = policy->max;
-		
+
 		//Screen off mode
 		if (suspended && this_dbs_info->requested_freq > FREQ_SLEEP_MAX)
 		    this_dbs_info->requested_freq = FREQ_SLEEP_MAX;
-		    
+
 		//Screen off mode
 		if (!suspended && this_dbs_info->requested_freq < FREQ_AWAKE_MIN)
 		    this_dbs_info->requested_freq = FREQ_AWAKE_MIN;
@@ -455,14 +455,14 @@ static void dbs_check_cpu(int cpu)
 			this_dbs_info->requested_freq = policy->min;
 		else
 			this_dbs_info->requested_freq -= freq_target;
-		
+
 		if (this_dbs_info->requested_freq < policy->min)
 			this_dbs_info->requested_freq = policy->min;
-			
+
 		//Screen on mode
 		if (!suspended && this_dbs_info->requested_freq < FREQ_AWAKE_MIN)
 		    this_dbs_info->requested_freq = FREQ_AWAKE_MIN;
-		
+
 		//Screen off mode
 		if (suspended && this_dbs_info->requested_freq > FREQ_SLEEP_MAX)
 		    this_dbs_info->requested_freq = FREQ_SLEEP_MAX;
@@ -550,7 +550,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				latency = 1;
 
 			def_sampling_rate = 10 * latency *
-				CONFIG_CPU_FREQ_SAMPLING_LATENCY_MULTIPLIER;
+				1000;
 
 			if (def_sampling_rate < MIN_STAT_SAMPLING_RATE)
 				def_sampling_rate = MIN_STAT_SAMPLING_RATE;
@@ -642,7 +642,7 @@ static void __exit cpufreq_gov_dbs_exit(void)
 }
 
 
-MODULE_AUTHOR ("Emilio L�pez <turl@tuxfamily.org>");
+MODULE_AUTHOR ("Emilio López <turl@tuxfamily.org>");
 MODULE_DESCRIPTION ("'cpufreq_lagfree' - A dynamic cpufreq governor for "
 		"Low Latency Frequency Transition capable processors "
 		"optimised for use in a battery environment"
@@ -654,4 +654,5 @@ fs_initcall(cpufreq_gov_dbs_init);
 #else
 module_init(cpufreq_gov_dbs_init);
 #endif
-module_exit(cpufreq_gov_dbs_exit); 
+module_exit(cpufreq_gov_dbs_exit);
+

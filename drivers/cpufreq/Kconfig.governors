@@ -17,3 +17,15 @@ config CPU_FREQ_GOV_WHEATLEY
 	Building on the classic 'ondemand' governor is implemented Wheatley
 	governor. The governor has two additional parameters that control
 	the state.
+
+config CPU_FREQ_GOV_LAGFREE
+        tristate "'lagfree' cpufreq governor"
+        depends on CPU_FREQ
+        ---help---
+	Lagfree is similar to ondemand. Main difference is it's optimization
+	to become more battery friendly. Frequency is gracefully decreased and
+	increased, unlike ondemand which jumps to 100% too often. Lagfree does
+	not skip any frequency step while scaling up or down. Remember that if
+	there's a requirement for sudden burst of power, lagfree can not satisfy
+	that since it has to raise cpu through each higher frequency step from
+	current. Some users report that video playback using lagfree stutters a little.
