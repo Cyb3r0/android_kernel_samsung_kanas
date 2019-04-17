@@ -156,6 +156,8 @@ config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
 
+source "drivers/cpufreq/Kconfig.default_governor"
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -345,6 +347,8 @@ config CPU_FREQ_GOV_INTERACTIVEX
 	help
 	   'interactivex' - This driver adds a dynamic cpufreq policy governor
 	   designed for latency-sensitive workloads.
+
+source "drivers/cpufreq/Kconfig.governors"
 
 menu "x86 CPU frequency scaling drivers"
 depends on X86

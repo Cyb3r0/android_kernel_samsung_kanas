@@ -1,0 +1,11 @@
+config CPU_FREQ_GOV_SMARTASS2
+	tristate "'smartassV2' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	SmartassV2 is a governor (controls the frequency of the 
+	CPU at each give moment) which like the first smartass is 
+	generally based on the implementation of interactive with
+	some major changes and the addition of a built in sleep
+	profile (behaves a bit differently when screen is off vs. on).
+	The smartassV2 improves the very naive scheme which the first
+	smartass had
