@@ -87,13 +87,6 @@ static struct cpufreq_table_data sc8825_cpufreq_table_data = {
 	},
 };
 
-struct cpufreq_conf sc8825_cpufreq_conf = {
-	.clk = NULL,
-	.regulator = NULL,
-	.freq_tbl = sc8825_cpufreq_table_data.freq_tbl,
-	.vddarm_mv = sc8825_cpufreq_table_data.vddarm_mv,
-};
-
 static void set_mcu_clk_freq(u32 mcu_freq)
 {
 	u32 val, rate, arm_clk_div, gr_gen1;
@@ -184,42 +177,6 @@ static struct cpufreq_table_data sc8830_cpufreq_table_data_cs = {
 		1125000,
 		1050000,
 		1025000,
-		1000000,
-	},
-};
-
-/*
-for 7715 test
-*/
-#if 0
-static struct cpufreq_table_data sc7715_cpufreq_table_data = {
-	.freq_tbl = {
-		{0, 1000000},
-		{1, SHARK_TDPLL_FREQUENCY},
-		{2, 600000},
-		{3, SHARK_TDPLL_FREQUENCY/2},
-		{4, CPUFREQ_TABLE_END},
-	},
-	.vddarm_mv = {
-		1200000,
-		1150000,
-		1100000,
-		1100000,
-		1000000,
-	},
-};
-#endif
-
-
-static struct cpufreq_table_data sc8830_cpufreq_table_data_es = {
-	.freq_tbl = {
-		{0, 1000000},
-		{1, SHARK_TDPLL_FREQUENCY},
-		{2, CPUFREQ_TABLE_END},
-	},
-	.vddarm_mv = {
-		1250000,
-		1200000,
 		1000000,
 	},
 };
@@ -497,7 +454,7 @@ static unsigned int sprd_cpufreq_getspeed(unsigned int cpu)
 	return sprd_raw_get_cpufreq();
 }
 
-static void sprd_set_cpureq_limit(void)
+static void sprd_set_cpufreq_limit(void)
 {
 	int i;
 	struct cpufreq_frequency_table *tmp = sprd_cpufreq_conf->freq_tbl;
@@ -511,22 +468,10 @@ static void sprd_set_cpureq_limit(void)
 static int sprd_freq_table_init(void)
 {
 	/* we init freq table here depends on which chip being used */
-	if (soc_is_scx35_v0()) {
-		pr_info("%s es_chip\n", __func__);
-		sprd_cpufreq_conf->freq_tbl = sc8830_cpufreq_table_data_es.freq_tbl;
-		sprd_cpufreq_conf->vddarm_mv = sc8830_cpufreq_table_data_es.vddarm_mv;
-	} else if (soc_is_scx35_v1()) {
-		pr_info("%s cs_chip\n", __func__);
-		sprd_cpufreq_conf->freq_tbl = sc8830_cpufreq_table_data_cs.freq_tbl;
-		sprd_cpufreq_conf->vddarm_mv = sc8830_cpufreq_table_data_cs.vddarm_mv;
-	} else if(soc_is_scx35g_v0()){
-	        sprd_cpufreq_conf->freq_tbl = sc8830t_cpufreq_table_data_es.freq_tbl;
-	        sprd_cpufreq_conf->vddarm_mv = sc8830t_cpufreq_table_data_es.vddarm_mv;
-	} else {
-		pr_err("%s error chip id\n", __func__);
-		return -EINVAL;
-	}
-	sprd_set_cpureq_limit();
+	sprd_cpufreq_conf->freq_tbl = sc8830_cpufreq_table_data_cs.freq_tbl;
+	sprd_cpufreq_conf->vddarm_mv = sc8830_cpufreq_table_data_cs.vddarm_mv;
+	
+	sprd_set_cpufreq_limit();
 	return 0;
 }
 
@@ -577,9 +522,9 @@ static struct cpufreq_driver sprd_cpufreq_driver = {
 	.exit		= sprd_cpufreq_exit,
 	.name		= "sprd",
 	.attr		= sprd_cpufreq_attr,
-#if defined(CONFIG_ARCH_SCX35)
+
 	.flags		= CPUFREQ_SHARED
-#endif
+
 };
 
 static ssize_t cpufreq_min_limit_show(struct device *dev, struct device_attribute *attr,char *buf)
@@ -836,13 +781,10 @@ static int __init sprd_cpufreq_modinit(void)
 {
 	int ret;
 
-#if defined(CONFIG_ARCH_SCX35)
-	sprd_cpufreq_conf = &sc8830_cpufreq_conf;
-#elif defined(CONFIG_ARCH_SC8825)
-	sprd_cpufreq_conf = &sc8825_cpufreq_conf;
-#endif
 
-#if defined(CONFIG_ARCH_SCX35)
+	sprd_cpufreq_conf = &sc8830_cpufreq_conf;
+
+
 	ret = sprd_freq_table_init();
 	if (ret)
 		return ret;
@@ -875,7 +817,7 @@ static int __init sprd_cpufreq_modinit(void)
 	clk_set_parent(sprd_cpufreq_conf->clk, sprd_cpufreq_conf->mpllclk);
 	global_freqs.old = sprd_raw_get_cpufreq();
 
-#endif
+
 
 	boot_done = jiffies + DVFS_BOOT_TIME;
 	ret = cpufreq_register_notifier(
@@ -891,10 +833,10 @@ static int __init sprd_cpufreq_modinit(void)
 
 static void __exit sprd_cpufreq_modexit(void)
 {
-#if defined(CONFIG_ARCH_SCX35)
+
 	if (!IS_ERR_OR_NULL(sprd_cpufreq_conf->regulator))
 		regulator_put(sprd_cpufreq_conf->regulator);
-#endif
+
 	cpufreq_unregister_driver(&sprd_cpufreq_driver);
 	cpufreq_unregister_notifier(
 		&sprd_cpufreq_policy_nb, CPUFREQ_POLICY_NOTIFIER);
