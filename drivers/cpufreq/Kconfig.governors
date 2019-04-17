@@ -29,3 +29,12 @@ config CPU_FREQ_GOV_LAGFREE
 	there's a requirement for sudden burst of power, lagfree can not satisfy
 	that since it has to raise cpu through each higher frequency step from
 	current. Some users report that video playback using lagfree stutters a little.
+
+config CPU_FREQ_GOV_LIONHEART
+	tristate "'lionheart' cpufreq policy governor"
+	depends on CPU_FREQ
+	---help---
+	Lionheart is a conservative-based governor which is based on samsung
+	update3 source. The tunables (such as the thresholds and sampling rate)
+	were changed so the governor behaves more like the performance one, at
+	the cost of battery as the scaling is very aggressive.
