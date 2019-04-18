@@ -71,9 +71,23 @@ SANDROID KERNEL FEATURES :
 
 
 	===============================
-	SANDROID KERNEL v1.5 15-01-2019
+	SANDROID KERNEL v1.5 18-04-2019
 	===============================
 		* Support for Nougat
+		* Support for Larch Power feature (should improve Battery-Life).
+		* Add OC 1.4GHz & UC 200MHz
+		* Add lulzactive governor
+		* Add lagfree governor
+		* Add wheatley governor 
+		* Add smartassV2 governor
+		* Add intelliactive governor
+		* Add lionheart governor
+		* Add CPU hotplug IntelliPlug
+		* Add CPU hotplug MSM Hotplug
+		* Add CPU hotplug MSM MPDecision Hotplug
+		* Add CPU hotplug Alucard Hotplug
+		* Add CPU hotplug ThunderPlug
+		* Add CPU hotplug AutoSMP
 
 
 
