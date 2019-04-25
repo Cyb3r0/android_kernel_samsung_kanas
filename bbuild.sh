@@ -7,7 +7,7 @@
 
 set -e -o pipefail
 
-DEFCONFIG=sandroid_mno_kanas_defconfig
+DEFCONFIG=sandroid_mn_kanas_defconfig
 NAME=LN15.1-SandroidKernel
 VERSION=v1.5
 DEVICE=kanas
@@ -15,7 +15,7 @@ OWNER=MuhammadIhsan-Ih24n
 NOW=`date "+%d%m%Y-%H%M%S"`
 PREFIX=SA
 
-export CROSS_COMPILE=./builds/toolchains/arm-eabi/bin/arm-eabi-
+export CROSS_COMPILE=/home/muhammadihsan/LineageOS15.1-O-SandroidTeam-Ih24n/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
 export ARCH=arm
 export LOCALVERSION=-`echo SandroidTeam-Ih24n`
 
@@ -30,6 +30,8 @@ function make_zip() {
 	cd ${KERNEL_PATH}/kernel_zip
 	zip -r ${KERNEL_ZIP_NAME}.zip ./
 	mv ${KERNEL_ZIP_NAME}.zip ${KERNEL_PATH}
+	echo -e $COLOR_BLUE"Compiling kernel done!$COLOR_NEUTRAL";
+	echo -e $COLOR_RED"Output File: ${KERNEL_ZIP_NAME}.zip";
 }
 
 function build_kernel() {
@@ -40,9 +42,17 @@ function build_kernel() {
 	find ${KERNEL_PATH} -name "zImage" -exec mv -f {} ${KERNEL_ZIP}/tools \;
 }
 
+function rm_if_exist() {
+	if [ -e $1 ]; then
+		rm -rf $1;
+fi;
+}
+
 function make_clean(){
 	make mrproper && make clean
-	rm  ${KERNEL_PATH}/*.zip
+	rm_if_exist *.zip;
+	echo -e "$yellow";
+	echo -e $COLOR_BLUE"Cleaning build environment done!$COLOR_NEUTRAL";
 }
 
 COLOR_RED=$(tput bold)$(tput setaf 1)
